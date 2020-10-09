@@ -1,0 +1,24 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+}
+@model IEnumerable<Category>
+<h2>Категории</h2>
+<br/><br />
+     
+     <button class="button"><i class="fas fa-plus">Добавить меню</i></button>
+     <button class="button"><i class="fas fa-stream">Добавить подменю</i></button>
+     <button class="button"><i class="fas fa-edit">Изменить имя</i></button>
+     <button class="button"><i class="fas fa-tras">Добавить подменю</i></button>
+<br/>
+<ul data-role="treeview">
+    @Html.Partial("CategoryPartial", Model)
+</ul>
+
+    <!--
+    <form method="post" asp-controller="Category" asp-action="AddCategory">
+        <input name="name">
+        <input type="submit" value="Добавить" />
+    </form>
+
+        -->

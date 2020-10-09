@@ -1,0 +1,37 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Авторизация</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="yandex-verification" content="4917b62818641c61" />
+    <!-- Metro 4 -->
+    <link rel="stylesheet" href="~/css/metro-all.min.css">
+    <link rel="stylesheet" href="~/css/auth.css">
+    <link rel="stylesheet" href="css/all.min.css">
+    <!-- Google Font -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
+</head>
+
+<body class="m4-cloak h-vh-100 d-flex flex-justify-center flex-align-center">
+
+    <div class="login-box">
+        @RenderBody()
+    </div>
+
+    <script src="~/js/jquery.min.js"></script>
+    <script src="~/js/metro.min.js"></script>
+    <script src="~/js/all.min.js"></script>
+    <script>
+        function invalidForm() {
+            var form = $(this);
+            form.addClass("ani-ring");
+            setTimeout(function () {
+                form.removeClass("ani-ring");
+            }, 1000);
+        }
+    </script>
+</body>
+
+</html>

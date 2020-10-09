@@ -1,0 +1,29 @@
+﻿@model Budget.Web.ViewModels.LoginViewModel
+@{
+    Layout = "_LayoutAccount";
+}
+
+    <form class="bg-white p-4"
+          data-role="validator"
+          data-clear-invalid="2000"
+          data-on-error-form="invalidForm"
+          method="post" asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Model.ReturnUrl">
+
+        <h1 class="mb-0">Вход</h1>
+        <div class="text-muted mb-4">Войдите, чтобы начать сеанс</div>
+        <div asp-validation-summary="All" class="invalid" style="color: red;"></div>
+        <div class="form-group">
+            <input type="text" asp-for="Email" data-role="input" placeholder="@Html.DisplayNameFor(d=>d.Email)" data-append="<i class='fa fa-envelope'></i>">
+            <span class="invalid_feedback" asp-validation-for="Email"></span>
+        </div>
+        <div class="form-group">
+            <input asp-for="Password" type="password" data-role="input" placeholder="@Html.DisplayNameFor(d=>d.Password)" data-append="<i class='fa fa-key'></i>">
+            <span class="invalid_feedback" asp-validation-for="Password"></span>
+        </div>
+        <div class="form-group d-flex flex-align-center flex-justify-between">
+            <input asp-for="RememberMe" type="checkbox" data-role="checkbox" data-caption="@Html.DisplayNameFor(d=>d.RememberMe)">
+            <button class="button primary">Вход</button>
+        </div>
+
+       
+    </form>

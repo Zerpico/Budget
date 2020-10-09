@@ -1,0 +1,36 @@
+{
+  "version": "1.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "library": "twitter-bootstrap@4.5.2",
+      "destination": "wwwroot/",
+      "files": [
+        "js/bootstrap.min.js",
+        "css/bootstrap.min.css"
+      ]
+    },
+    {
+      "library": "jquery@3.5.1",
+      "destination": "wwwroot/lib/jquery/"
+    },
+    {
+      "library": "jqueryui@1.12.1",
+      "destination": "wwwroot/js/"
+    },
+    {
+      "library": "font-awesome@5.14.0",
+      "destination": "wwwroot/",
+      "files": [
+        "css/all.min.css"
+      ]
+    },
+    {
+      "library": "jquery-sparklines@2.1.2",
+      "destination": "wwwroot/js/",
+      "files": [
+        "jquery.sparkline.min.js"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,122 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="yandex-verification" content="4917b62818641c61" />
+    <title>Бюджет - @ViewData["Title"]</title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/all.min.css">
+    <link rel="stylesheet" href="css/AdminLTE.css">
+    <link rel="stylesheet" href="css/_all-skins.min.css">
+    <link rel="stylesheet" href="css/metro-all.min.css">
+
+    <!-- Google Font -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
+</head>
+@{
+    //string avatar = Utils.GetGravatarUrl(User.Identity.Name);
+    string avatar = $"https://ui-avatars.com/api/{User.Identity.Name}/128";
+}
+@using Budget.Web.Helpers
+<body class="hold-transition skin-blue sideview-mini">
+    <div class="wrapper">
+        <header class="main-header">
+
+            <!-- Logo -->
+            <a class="logo" asp-controller="Home" asp-action="Index">
+
+                <!-- mini logo for sideview mini 50x50 pixels -->
+                <span class="logo-mini"><b>Б</b></span>
+                <!-- logo for regular state and mobile devices -->
+                <span class="logo-lg"><b>Бюджет</b></span>
+            </a>
+
+            <!-- Header Navbar: style can be found in header.less -->
+            <nav class="navbar navbar-static-top" style="padding: 0px;">
+                <!-- sideview toggle button-->
+                <a href="#" class="sideview-toggle" data-toggle="push-menu" role="button">
+                    <i class="fas fa-bars"></i>
+                </a>
+
+                <div class="app-bar-container fg-white">
+                    <a class="app-bar-item fg-white" href="#">
+                        <img class="avatar" src="@avatar" />
+                        <span class="ml-2 app-bar-name">@User.Identity.Name</span>
+                    </a>
+
+                    <div class="user-block shadow-1" data-role="collapse" data-collapsed="true" style="display: none;">
+                        <div class="bg-darkCyan fg-white p-2 text-center">
+                            <img src="@avatar" class="avatar">
+                            <div class="h4 mb-0">@User.Identity.Name</div>                            
+                        </div>
+                        <div class="bg-white d-flex flex-justify-between flex-equal-items p-2 bg-light">
+                            <form method="post" asp-controller="Account" asp-action="Logout" style="flex: inherit;">
+                                <input class="button ml-1" type="submit" value="Профиль" />
+                            </form>
+                            <form method="post" asp-controller="Account" asp-action="Logout" style="flex: inherit;">
+                                <input class="button ml-1" type="submit" value="Выйти" />
+                            </form>
+                        </div>
+                    </div>
+
+                </div>
+
+            </nav>
+
+        </header>
+
+        <!-- Left side column. contains the logo and sideview -->
+        <aside class="main-sideview">
+            <!-- sideview: style can be found in sideview.less -->
+            <section class="sideview">
+                <!-- sideview menu: : style can be found in sideview.less -->
+                <ul class="sideview-menu" data-widget="tree">
+                    <li class="header">MAIN NAVIGATION</li>
+                    <li class="@Html.IsActive(null, "Home")">
+                        <a asp-controller="Home" asp-action="Index" >
+                            <i class="fa fa-home"></i> <span>Сводка</span>
+                        </a>
+                    </li>
+                    <li class="@Html.IsActive(null, "Payment")">
+                        <a asp-area="" asp-controller="Payment" asp-action="Index">
+                            <i class="fa fa-wallet"></i> <span>Платежи</span>
+                        </a>
+                    </li>
+                    <li class="@Html.IsActive(null, "Category")">
+                        <a asp-area="" asp-controller="Category" asp-action="Index" >
+                            <i class="fa fa-list"></i> <span>Категории</span>
+                        </a>
+                    </li>
+
+                </ul>
+            </section>
+            <!-- /.sideview -->
+        </aside>
+
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+            <!-- Main content -->
+            <section class="content">
+
+                @RenderBody()
+
+            </section>
+            <!-- /.content -->
+        </div>
+
+    </div>
+
+
+
+    <script src="js/metro.min.js"></script>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/all.min.js"></script>
+    <script src="js/sidebar.js"></script>
+
+</body>
+</html>
