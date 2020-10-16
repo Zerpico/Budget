@@ -13,7 +13,7 @@ namespace Budget.Web.Models
     {
         public Category()
         {
-            Children = new HashSet<Category>();
+            Childrens = new HashSet<Category>();
         }
 
         [Key]
@@ -26,12 +26,13 @@ namespace Budget.Web.Models
 
         public int? ParentId { get; set; }
         public virtual Category Parent { get; set; }
-        public virtual ICollection<Category> Children { get; set; }
+        public virtual ICollection<Category> Childrens { get; set; }
+        public virtual ICollection<Payment> Payments { get; set; }
     }
 
     public enum CategoryEnum
     {
-        income = 1,
-        outcome = 2
+        Доход = 1,
+        Расход = 2
     }
 }

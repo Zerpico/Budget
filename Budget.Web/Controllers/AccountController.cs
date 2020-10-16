@@ -18,18 +18,18 @@ namespace Budget.Web.Controllers
             _signInManager = signInManager;
         }
 
-   /*     [HttpGet]
+     [HttpGet]
         public IActionResult Register()
         {            
             return View();            
         }
-*/
+
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
             if (ModelState.IsValid)
             {
-                ApplicationUser user = new ApplicationUser { Email = model.Email, UserName = model.DisplayName, FinanceUserId = GetUniqueFId() };
+                ApplicationUser user = new ApplicationUser { Email = model.Email, UserName = model.DisplayName };
                 
                 // добавляем пользователя
                 var result = await _userManager.CreateAsync(user, model.Password);
@@ -101,14 +101,6 @@ namespace Budget.Web.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        private int GetUniqueFId()
-        {
-            int uniqueInt = -1;
-            while (uniqueInt < 0)
-            {
-                uniqueInt = Guid.NewGuid().ToString("N").GetHashCode();
-            }
-            return uniqueInt;
-        }
+        
     }
 }

@@ -32,9 +32,9 @@ namespace Budget.Web
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddDbContext<BudgetDbContext>(options =>
+          /*  services.AddDbContext<BudgetDbContext>(options =>
                 options.UseSqlite(Configuration.GetConnectionString("ApplicationConnection")));
-
+                */
             services.Configure<IISServerOptions>(options =>
             {
                 options.AutomaticAuthentication = false;
@@ -54,6 +54,7 @@ namespace Budget.Web
             .AddErrorDescriber<RussianIdentityErrorDescriber>(); 
 
             services.AddControllersWithViews();
+            services.AddHttpContextAccessor();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

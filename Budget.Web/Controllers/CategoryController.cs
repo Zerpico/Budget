@@ -7,6 +7,7 @@ using Budget.Web.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -16,9 +17,9 @@ namespace Budget.Web.Controllers
     public class CategoryController : Controller
     {
         public string Message { get; set; }
-        private readonly BudgetDbContext _dbContext;
+        private readonly ApplicationDbContext _dbContext;
 
-        public CategoryController(BudgetDbContext dbContext)
+        public CategoryController(ApplicationDbContext dbContext)
         {
             _dbContext = dbContext;
         }
@@ -46,43 +47,33 @@ namespace Budget.Web.Controllers
             //давай загрузим всё рекурсивно
             //https://www.codeproject.com/Articles/1077799/Creating-Dynamics-Tree-View-Menu-in-ASP-NET-MVC-in?msg=5220037
             //https://www.codeproject.com/Articles/337439/Tree-View-with-CRUD-operations-drag-and-drop-DnD-a
-            var category = GetCategoryByIdRecursive(1);
-          
-            return View(category);
+            //var category = GetCategoryByIdRecursive(1);
+
+            
+            return View(GetTreeCatalog());
         }
 
-                   
 
-        public IEnumerable<Category> GetCategoryByIdRecursive(int id)
+        IEnumerable<CategoryDto> GetTreeCatalog()
         {
-            var parent = _dbContext.Categories.Where(t => t.ParentId == null)
-            .Select(t => new Category
-            {
-                Id = t.Id,
-                Name = t.Name,
-                ParentId = t.ParentId ?? 0               
-            }).ToList();
+            List<CategoryDto> result = new List<CategoryDto>();
+            var catalog = _dbContext.Categories.ToList();
 
-            foreach(var par in parent)
-                par.Children = (ICollection<Category>)GetChildrenByParentId(par.Id);            
-            return parent;
-        }
-        private IEnumerable<Category> GetChildrenByParentId(int parentId)
-        {
-            var children = new List<Category>();
-            var threads = _dbContext.Categories.Where(x => x.ParentId == parentId);
-            foreach (var t in threads)
+            result = catalog.Where(d => d.ParentId == null).Select(c=> new CategoryDto() { Id = c.Id, Name=c.Name, ParentId = c.ParentId.HasValue ? c.ParentId.Value : 0, Type =c.Type, LevelId =1 }).ToList();
+
+            for(int i=0;i<result.Count;i++)
             {
-                var thread = new Category
-                {
-                    Id = t.Id,
-                    ParentId = t.ParentId ?? 0,
-                    Name = t.Name,                    
-                    Children = (ICollection<Category>)GetChildrenByParentId(t.Id)
-                };
-                children.Add(thread);
+                BuildTree(result[i], catalog, 1);
             }
-            return children;
+            return result;
+        }
+
+        static void BuildTree(CategoryDto con, List<Category> connectionList, int level)
+        {
+            int copyLevel = level + 1;
+            foreach(var c in connectionList.Where(c => (c.ParentId.HasValue ? c.ParentId.Value : -1) == con.Id))
+                con.children.Add(new CategoryDto() { Id = c.Id, Name = c.Name, ParentId = c.ParentId.HasValue ? c.ParentId.Value : 0, Type = c.Type, LevelId = copyLevel });
+            foreach (CategoryDto c in con.children) BuildTree(c, connectionList, copyLevel);
         }
 
 
@@ -100,6 +91,57 @@ namespace Budget.Web.Controllers
             
 
             return View(name);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var category = await _dbContext.Categories
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (category == null)
+            {
+                return NotFound();
+            }
+
+            _dbContext.Categories.Remove(category);
+            _dbContext.SaveChanges();
+            return RedirectPermanent("~/Category/Index");
+        }
+
+        // GET: Payment/Create
+        public IActionResult Create()
+        {
+            var categoryTypes = Enum.GetValues(typeof(Models.CategoryEnum)).Cast<Models.CategoryEnum>().Select(t => new Tuple<int,string>(((int)t), t.ToString() ));
+
+            var categories = _dbContext.Categories.ToList();
+            categories.Add(new Category() { Id = -1, Name = "<Нет>" });
+
+            ViewData["ParentId"] = new SelectList(categories, nameof(Category.Id), nameof(Category.Name), -1);
+            ViewData["Type"] = new SelectList(categoryTypes, "Item1", "Item2", 2);
+            return View();
+        }
+
+        // POST: Payment/Create
+        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
+        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create([Bind("Id,Name,Type,ParentId")] Category category)
+        {           
+            if (ModelState.IsValid)
+            {
+                _dbContext.Add(category);
+                await _dbContext.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+
+            ViewData["CategoryId"] = new SelectList(_dbContext.Categories, nameof(Category.Id), nameof(Category.Name), category.ParentId);
+            return View(category);
         }
     }
 }

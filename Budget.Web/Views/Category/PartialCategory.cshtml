@@ -1,0 +1,54 @@
+﻿@model IEnumerable<Budget.Web.Models.CategoryDto>
+
+
+
+@foreach (var item in Model)
+{
+<tr data-id="@item.Id" data-parent="@item.ParentId" data-level="@item.LevelId">
+    <td data-column="name"><b></b>@item.Name</td>
+    <td>@item.Type</td>
+    <td>
+        <a class="button primary" asp-action="Edit" asp-route-id="@item.Id">Изменить</a>
+
+        <button class="button primary" onclick="openDemoDialogActions('@item.Id','@item.Name')">Удалить</button>
+    </td>
+</tr>
+
+    @if (item.children.Any())
+        @Html.Partial("PartialCategory", item.children)
+
+}
+
+<script>
+    function openDemoDialogActions(id, name) {
+        Metro.dialog.create({
+            title: "Удаление категории",
+            content: "Вы действительно хотите удалить категорию '" + name + "' ?",
+            actions: [
+                {
+                    caption: "Удалить",
+                    cls: "js-dialog-close alert",
+                    onclick: function () {
+                        var xhr = new XMLHttpRequest();
+                        var body = 'id=' + encodeURIComponent(id);
+                        xhr.open("POST", 'Category/Delete', true);
+                        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                        xhr.onreadystatechange = function () {                           
+                            if (xhr.readyState == 4) {
+                                window.location = xhr.responseURL;
+                            }
+                        }
+                        xhr.send(body);
+                    }
+                },
+                {
+                    caption: "Отмена",
+                    cls: "js-dialog-close",
+                    
+                }
+            ]
+        });
+    }
+</script>
+
+
