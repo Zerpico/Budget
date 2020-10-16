@@ -53,13 +53,18 @@ namespace Budget.Web.Controllers
             return View(GetTreeCatalog());
         }
 
+        [HttpGet]
+        public async Task<IActionResult> FillDropdown()
+        {
+            return new JsonResult(GetTreeCatalog());
+        }
 
         IEnumerable<CategoryDto> GetTreeCatalog()
         {
             List<CategoryDto> result = new List<CategoryDto>();
             var catalog = _dbContext.Categories.ToList();
 
-            result = catalog.Where(d => d.ParentId == null).Select(c=> new CategoryDto() { Id = c.Id, Name=c.Name, ParentId = c.ParentId.HasValue ? c.ParentId.Value : 0, Type =c.Type, LevelId =1 }).ToList();
+            result = catalog.Where(d => d.ParentId == null).Select(c=> new CategoryDto() { Id = c.Id, Title=c.Name, ParentId = c.ParentId.HasValue ? c.ParentId.Value : 0, Type =c.Type, LevelId =1 }).ToList();
 
             for(int i=0;i<result.Count;i++)
             {
@@ -72,8 +77,8 @@ namespace Budget.Web.Controllers
         {
             int copyLevel = level + 1;
             foreach(var c in connectionList.Where(c => (c.ParentId.HasValue ? c.ParentId.Value : -1) == con.Id))
-                con.children.Add(new CategoryDto() { Id = c.Id, Name = c.Name, ParentId = c.ParentId.HasValue ? c.ParentId.Value : 0, Type = c.Type, LevelId = copyLevel });
-            foreach (CategoryDto c in con.children) BuildTree(c, connectionList, copyLevel);
+                con.Subs.Add(new CategoryDto() { Id = c.Id, Title = c.Name, ParentId = c.ParentId.HasValue ? c.ParentId.Value : 0, Type = c.Type, LevelId = copyLevel });
+            foreach (CategoryDto c in con.Subs) BuildTree(c, connectionList, copyLevel);
         }
 
 
@@ -119,11 +124,24 @@ namespace Budget.Web.Controllers
             var categoryTypes = Enum.GetValues(typeof(Models.CategoryEnum)).Cast<Models.CategoryEnum>().Select(t => new Tuple<int,string>(((int)t), t.ToString() ));
 
             var categories = _dbContext.Categories.ToList();
-            categories.Add(new Category() { Id = -1, Name = "<Нет>" });
-
-            ViewData["ParentId"] = new SelectList(categories, nameof(Category.Id), nameof(Category.Name), -1);
+            categories.Add(new Category { Id = -1, Name = "<нет>" });
+            var newcat = PreorderCategories("", categories.OrderBy(d => d.Id).ToList(), null);            
+          
             ViewData["Type"] = new SelectList(categoryTypes, "Item1", "Item2", 2);
-            return View();
+            ViewData["Parents"] = new SelectList(newcat, "Item1", "Item2", 0);
+            return View(); 
+        }
+
+        public static IEnumerable<Tuple<int, string>> PreorderCategories(string prefix, List<Category> categories, int? parentID)
+        {
+            var result = new List<Tuple<int, string>>();
+            var children = categories.Where(c => c.ParentId == parentID);
+            foreach (var category in children)
+            {
+                result.Add(new Tuple<int, string>(category.Id, prefix + category.Name));
+                result.AddRange(PreorderCategories(prefix + "- ", categories, category.Id));
+            }
+            return result;
         }
 
         // POST: Payment/Create
@@ -132,7 +150,7 @@ namespace Budget.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,Type,ParentId")] Category category)
-        {           
+        {
             if (ModelState.IsValid)
             {
                 _dbContext.Add(category);
@@ -140,8 +158,8 @@ namespace Budget.Web.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewData["CategoryId"] = new SelectList(_dbContext.Categories, nameof(Category.Id), nameof(Category.Name), category.ParentId);
-            return View(category);
+            //ViewData["CategoryId"] = new SelectList(_dbContext.Categories, nameof(Category.Id), nameof(Category.Name), category.ParentId);
+            return View();
         }
     }
 }

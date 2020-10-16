@@ -9,15 +9,16 @@ namespace Budget.Web.Models
     {
         public CategoryDto()
         {
-            children = new List<CategoryDto>();
+            Subs = new List<CategoryDto>();
         }
 
         public int Id { get; set; }       
-        public string Name { get; set; }      
-        public CategoryEnum Type { get; set; }
+        public string Title { get; set; }
         public int ParentId { get; set; }
+        public CategoryEnum Type { get; set; }
+        
         public int LevelId { get; set; }
 
-        public List<CategoryDto> children { get; set; }
+        public List<CategoryDto> Subs { get; set; }
     }
 }

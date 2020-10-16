@@ -15,9 +15,9 @@ namespace Budget.Web.Models
         [NotNull]
         [DataType(DataType.Date)]
         public DateTime Date { get; set; }
-        [NotNull]
+       
         [Column(TypeName = "decimal (18,2)")]
-        public double Money { get; set; }
+        public double? Money { get; set; }
 
         [NotNull]
         public int CategoryId { get; set; }

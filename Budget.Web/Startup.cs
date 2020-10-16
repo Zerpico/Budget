@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Budget.Web.Data;
@@ -10,6 +11,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,10 +33,7 @@ namespace Budget.Web
         {
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
-
-          /*  services.AddDbContext<BudgetDbContext>(options =>
-                options.UseSqlite(Configuration.GetConnectionString("ApplicationConnection")));
-                */
+            
             services.Configure<IISServerOptions>(options =>
             {
                 options.AutomaticAuthentication = false;
@@ -73,7 +72,8 @@ namespace Budget.Web
             }
 
             
-           // app.UseHttpsRedirection();
+            app.UseRequestLocalization("en-US", "ru-RU");
+            // app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
             app.UseAuthentication();    

@@ -5,17 +5,17 @@
 @foreach (var item in Model)
 {
 <tr data-id="@item.Id" data-parent="@item.ParentId" data-level="@item.LevelId">
-    <td data-column="name"><b></b>@item.Name</td>
+    <td data-column="name"><b></b>@item.Title</td>
     <td>@item.Type</td>
     <td>
         <a class="button primary" asp-action="Edit" asp-route-id="@item.Id">Изменить</a>
 
-        <button class="button primary" onclick="openDemoDialogActions('@item.Id','@item.Name')">Удалить</button>
+        <button class="button primary" onclick="openDemoDialogActions('@item.Id','@item.Title')">Удалить</button>
     </td>
 </tr>
 
-    @if (item.children.Any())
-        @Html.Partial("PartialCategory", item.children)
+    @if (item.Subs.Any())
+        @Html.Partial("PartialCategory", item.Subs)
 
 }
 

@@ -26,34 +26,22 @@ namespace Budget.Web.Controllers
         // GET: Payment
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Payments.Include(p => p.Category).Include(x=>x.User);
+            var UserId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var applicationDbContext = _context.Payments.Include(p => p.Category).Include(x=>x.User).Where(u=>u.UserId == UserId).OrderByDescending(d=>d.Date);
             return View(await applicationDbContext.ToListAsync());
         }
 
-        // GET: Payment/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var payment = await _context.Payments
-                .Include(p => p.Category)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (payment == null)
-            {
-                return NotFound();
-            }
-
-            return View(payment);
-        }
+        
 
         // GET: Payment/Create
         public IActionResult Create()
         {
-            ViewData["CategoryId"] = new SelectList(_context.Categories, nameof(Category.Id), nameof(Category.Name));
-            return View();
+            var categories = _context.Categories.ToList();
+            categories.Add(new Category { Id = -1, Name = "<нет>" });
+            var newcat = PreorderCategories("", categories.OrderBy(d => d.Id).ToList(), null);
+
+            ViewData["CategoryId"] = new SelectList(newcat, "Item1", "Item2");
+            return View(new Payment() { Date = DateTime.Now });
         }
 
         // POST: Payment/Create
@@ -165,6 +153,18 @@ namespace Budget.Web.Controllers
         private bool PaymentExists(int id)
         {
             return _context.Payments.Any(e => e.Id == id);
+        }
+
+        public static IEnumerable<Tuple<int, string>> PreorderCategories(string prefix, List<Category> categories, int? parentID)
+        {
+            var result = new List<Tuple<int, string>>();
+            var children = categories.Where(c => c.ParentId == parentID);
+            foreach (var category in children)
+            {
+                result.Add(new Tuple<int, string>(category.Id, prefix + category.Name));
+                result.AddRange(PreorderCategories(prefix + "- ", categories, category.Id));
+            }
+            return result;
         }
     }
 }
